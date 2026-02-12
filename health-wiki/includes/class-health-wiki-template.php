@@ -52,6 +52,7 @@ final class Health_Wiki_Template {
             }
         }
 
+        $html .= self::related_posts( $post_id, $post_type );
         $html .= self::references( $post_id, $post_type );
         $html .= '</div><!-- .hw-article -->';
 
@@ -322,6 +323,76 @@ final class Health_Wiki_Template {
         }
         $html .= '</ol></section>';
         return $html;
+    }
+
+    /* ── Related Posts ────────────────────────────────────── */
+
+    private static function related_posts( int $id, string $post_type ): string {
+        $fields = match ( $post_type ) {
+            HW_CPT_PENYAKIT   => [
+                'hw_penyakit_rel_obat'       => 'Obat Terkait',
+                'hw_penyakit_rel_organ'      => 'Organ Terkait',
+                'hw_penyakit_rel_pengobatan' => 'Pengobatan Terkait',
+                'hw_penyakit_rel_gizi'       => 'Nutrisi Terkait',
+            ],
+            HW_CPT_OBAT       => [
+                'hw_obat_rel_penyakit'   => 'Penyakit yang Ditangani',
+                'hw_obat_rel_pengobatan' => 'Pengobatan Terkait',
+            ],
+            HW_CPT_ORGAN      => [
+                'hw_organ_rel_penyakit' => 'Penyakit pada Organ Ini',
+                'hw_organ_rel_gizi'     => 'Nutrisi untuk Organ',
+            ],
+            HW_CPT_GIZI       => [
+                'hw_gizi_rel_penyakit' => 'Mencegah Penyakit',
+                'hw_gizi_rel_organ'    => 'Baik untuk Organ',
+            ],
+            HW_CPT_PENGOBATAN => [
+                'hw_pengobatan_rel_penyakit' => 'Penyakit yang Ditangani',
+                'hw_pengobatan_rel_obat'     => 'Obat yang Digunakan',
+            ],
+            default => [],
+        };
+
+        $groups = [];
+        foreach ( $fields as $field => $label ) {
+            $posts = get_field( $field, $id );
+            if ( ! $posts || ! is_array( $posts ) ) {
+                continue;
+            }
+            $items = '';
+            foreach ( $posts as $p ) {
+                $cpt_label = self::cpt_label( (string) get_post_type( $p ) );
+                $items .= sprintf(
+                    '<li><a href="%s">%s</a><span class="hw-related__badge">%s</span></li>',
+                    esc_url( get_permalink( $p ) ),
+                    esc_html( get_the_title( $p ) ),
+                    esc_html( $cpt_label )
+                );
+            }
+            if ( $items ) {
+                $groups[] = '<div class="hw-related__group"><h3>' . esc_html( $label ) . '</h3><ul>' . $items . '</ul></div>';
+            }
+        }
+
+        if ( ! $groups ) {
+            return '';
+        }
+
+        return '<section class="hw-section hw-related" id="artikel-terkait"><h2>Artikel Terkait</h2>'
+            . implode( '', $groups )
+            . '</section>';
+    }
+
+    private static function cpt_label( string $post_type ): string {
+        return match ( $post_type ) {
+            HW_CPT_PENYAKIT   => 'Penyakit',
+            HW_CPT_OBAT       => 'Obat',
+            HW_CPT_ORGAN      => 'Organ',
+            HW_CPT_GIZI       => 'Gizi',
+            HW_CPT_PENGOBATAN => 'Pengobatan',
+            default           => '',
+        };
     }
 
     /* ── Label Helpers ────────────────────────────────────── */

@@ -43,6 +43,15 @@
 .hw-nutrition-table thead th{background:var(--hw-bg);font-weight:600;position:sticky;top:0}
 .hw-nutrition-table tbody tr:hover{background:var(--hw-bg)}
 
+/* Related Posts */
+.hw-related__group{margin-bottom:1rem}
+.hw-related__group h3{font-size:1.05rem;margin:0 0 .5rem;color:var(--hw-text)}
+.hw-related__group ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.hw-related__group li{display:flex;align-items:center;gap:.4rem}
+.hw-related__group a{color:var(--hw-primary);text-decoration:none;padding:.3rem .6rem;background:var(--hw-primary-light);border-radius:var(--hw-radius);font-size:.9rem;transition:background .15s}
+.hw-related__group a:hover{background:var(--hw-primary);color:var(--hw-white);text-decoration:none}
+.hw-related__badge{font-size:.75rem;color:var(--hw-text-sec);background:var(--hw-bg);padding:.15rem .4rem;border-radius:4px}
+
 /* References */
 .hw-references{font-size:.9rem;color:var(--hw-text-sec);margin-top:var(--hw-gap)}
 .hw-references h2{font-size:1.1rem;color:var(--hw-text)}

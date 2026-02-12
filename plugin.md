@@ -14,6 +14,20 @@ Wiki Kesehatan Indonesia. Referensi: Alodokter, Halodoc.
 
 Setiap CPT memiliki taxonomy kategori masing-masing.
 
+## Relasi Antar CPT
+
+Semua post type saling terhubung via ACF Relationship fields:
+
+| CPT | Terhubung ke |
+|-----|-------------|
+| Penyakit | Obat Terkait, Organ Terkait, Pengobatan Terkait, Nutrisi Terkait |
+| Obat | Penyakit yang Ditangani, Pengobatan Terkait |
+| Organ | Penyakit pada Organ, Nutrisi untuk Organ |
+| Gizi | Mencegah Penyakit, Baik untuk Organ |
+| Pengobatan | Penyakit yang Ditangani, Obat yang Digunakan |
+
+Relasi bersifat bi-directional secara manual (pilih di kedua sisi). Field prefix: `hw_{cpt}_rel_{target}`. Template menampilkan "Artikel Terkait" dengan link antar CPT. Schema menambahkan `relatedLink` untuk SEO internal linking.
+
 ## Dependensi
 
 - **ACF Pro** — Semua field data terdaftar via `acf_add_local_field_group()` di `class-health-wiki-acf.php`
@@ -45,7 +59,8 @@ Konten yang di-render:
 3. Konten editor WordPress (deskripsi utama)
 4. Table of Contents (otomatis dari section yang terisi)
 5. Section-section terstruktur dari ACF fields
-6. Daftar referensi
+6. Artikel Terkait (link antar CPT dari relationship fields)
+7. Daftar referensi
 
 ## Schema.org
 

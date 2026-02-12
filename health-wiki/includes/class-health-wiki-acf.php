@@ -47,6 +47,10 @@ final class Health_Wiki_ACF {
                     self::text( 'judul', 'Judul' ),
                     self::field( 'url', 'url', 'URL' ),
                 ] ),
+                self::relationship( 'hw_penyakit_rel_obat', 'Obat Terkait', [ HW_CPT_OBAT ] ),
+                self::relationship( 'hw_penyakit_rel_organ', 'Organ Terkait', [ HW_CPT_ORGAN ] ),
+                self::relationship( 'hw_penyakit_rel_pengobatan', 'Pengobatan Terkait', [ HW_CPT_PENGOBATAN ] ),
+                self::relationship( 'hw_penyakit_rel_gizi', 'Nutrisi Terkait', [ HW_CPT_GIZI ] ),
             ],
             'location' => self::location( HW_CPT_PENYAKIT ),
         ] );
@@ -81,6 +85,8 @@ final class Health_Wiki_ACF {
                     self::text( 'judul', 'Judul' ),
                     self::field( 'url', 'url', 'URL' ),
                 ] ),
+                self::relationship( 'hw_obat_rel_penyakit', 'Penyakit yang Ditangani', [ HW_CPT_PENYAKIT ] ),
+                self::relationship( 'hw_obat_rel_pengobatan', 'Pengobatan Terkait', [ HW_CPT_PENGOBATAN ] ),
             ],
             'location' => self::location( HW_CPT_OBAT ),
         ] );
@@ -107,6 +113,8 @@ final class Health_Wiki_ACF {
                     self::text( 'judul', 'Judul' ),
                     self::field( 'url', 'url', 'URL' ),
                 ] ),
+                self::relationship( 'hw_organ_rel_penyakit', 'Penyakit pada Organ Ini', [ HW_CPT_PENYAKIT ] ),
+                self::relationship( 'hw_organ_rel_gizi', 'Nutrisi untuk Organ', [ HW_CPT_GIZI ] ),
             ],
             'location' => self::location( HW_CPT_ORGAN ),
         ] );
@@ -147,6 +155,8 @@ final class Health_Wiki_ACF {
                     self::text( 'judul', 'Judul' ),
                     self::field( 'url', 'url', 'URL' ),
                 ] ),
+                self::relationship( 'hw_gizi_rel_penyakit', 'Mencegah Penyakit', [ HW_CPT_PENYAKIT ] ),
+                self::relationship( 'hw_gizi_rel_organ', 'Baik untuk Organ', [ HW_CPT_ORGAN ] ),
             ],
             'location' => self::location( HW_CPT_GIZI ),
         ] );
@@ -179,6 +189,8 @@ final class Health_Wiki_ACF {
                     self::text( 'judul', 'Judul' ),
                     self::field( 'url', 'url', 'URL' ),
                 ] ),
+                self::relationship( 'hw_pengobatan_rel_penyakit', 'Penyakit yang Ditangani', [ HW_CPT_PENYAKIT ] ),
+                self::relationship( 'hw_pengobatan_rel_obat', 'Obat yang Digunakan', [ HW_CPT_OBAT ] ),
             ],
             'location' => self::location( HW_CPT_PENGOBATAN ),
         ] );
@@ -234,6 +246,20 @@ final class Health_Wiki_ACF {
             'name'    => $name,
             'type'    => 'select',
             'choices' => $choices,
+        ];
+    }
+
+    private static function relationship( string $name, string $label, array $post_types ): array {
+        return [
+            'key'           => 'field_' . $name,
+            'label'         => $label,
+            'name'          => $name,
+            'type'          => 'relationship',
+            'post_type'     => $post_types,
+            'filters'       => [ 'search', 'post_type' ],
+            'return_format' => 'object',
+            'min'           => 0,
+            'max'           => 10,
         ];
     }
 

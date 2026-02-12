@@ -28,7 +28,7 @@
 - [ ] Robots: index, follow, max-snippet:-1, max-image-preview:large
 - [ ] Breadcrumb dengan BreadcrumbList schema
 - [ ] Heading hierarchy: satu H1 (dari tema), H2 per section
-- [ ] Internal linking antar CPT jika relevan
+- [ ] Internal linking antar CPT via relationship fields (wajib diisi untuk setiap konten)
 - [ ] URL slug pendek dan deskriptif (sudah diatur di CPT rewrite)
 
 ## PageSpeed 100 Checklist
@@ -49,6 +49,23 @@
 - Semua link eksternal: `rel="noopener noreferrer nofollow"`
 - Capability check untuk admin operations
 - Tidak ada file upload handler kustom
+
+## Relasi Antar CPT
+
+Field pattern: `hw_{cpt}_rel_{target}` (ACF Relationship, return format: object)
+
+| Source | Target Fields |
+|--------|--------------|
+| Penyakit | `_rel_obat`, `_rel_organ`, `_rel_pengobatan`, `_rel_gizi` |
+| Obat | `_rel_penyakit`, `_rel_pengobatan` |
+| Organ | `_rel_penyakit`, `_rel_gizi` |
+| Gizi | `_rel_penyakit`, `_rel_organ` |
+| Pengobatan | `_rel_penyakit`, `_rel_obat` |
+
+- Selalu isi relasi di kedua arah (misal: Penyakit→Obat DAN Obat→Penyakit)
+- Template render otomatis di section "Artikel Terkait"
+- Schema menambahkan `relatedLink` untuk SEO
+- Max 10 relasi per field
 
 ## Konvensi
 

@@ -42,6 +42,10 @@ final class Health_Wiki_Schema {
         };
 
         if ( $specific ) {
+            $related_links = self::get_related_links( $post_id, $post_type );
+            if ( $related_links ) {
+                $specific['relatedLink'] = $related_links;
+            }
             $schemas[] = $specific;
         }
 
@@ -111,6 +115,35 @@ final class Health_Wiki_Schema {
                 ],
             ],
         ];
+    }
+
+    /* ── Related Links ────────────────────────────────────── */
+
+    private static function get_related_links( int $id, string $post_type ): array {
+        $fields = match ( $post_type ) {
+            HW_CPT_PENYAKIT   => [ 'hw_penyakit_rel_obat', 'hw_penyakit_rel_organ', 'hw_penyakit_rel_pengobatan', 'hw_penyakit_rel_gizi' ],
+            HW_CPT_OBAT       => [ 'hw_obat_rel_penyakit', 'hw_obat_rel_pengobatan' ],
+            HW_CPT_ORGAN      => [ 'hw_organ_rel_penyakit', 'hw_organ_rel_gizi' ],
+            HW_CPT_GIZI       => [ 'hw_gizi_rel_penyakit', 'hw_gizi_rel_organ' ],
+            HW_CPT_PENGOBATAN => [ 'hw_pengobatan_rel_penyakit', 'hw_pengobatan_rel_obat' ],
+            default           => [],
+        };
+
+        $links = [];
+        foreach ( $fields as $field ) {
+            $posts = get_field( $field, $id );
+            if ( ! $posts || ! is_array( $posts ) ) {
+                continue;
+            }
+            foreach ( $posts as $p ) {
+                $url = get_permalink( $p );
+                if ( $url ) {
+                    $links[] = $url;
+                }
+            }
+        }
+
+        return array_values( array_unique( $links ) );
     }
 
     /* ── MedicalCondition (Penyakit) ──────────────────────── */
