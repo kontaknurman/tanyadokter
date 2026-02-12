@@ -50,6 +50,16 @@
 - Capability check untuk admin operations
 - Tidak ada file upload handler kustom
 
+## Archive A-Z
+
+- Setiap CPT punya halaman archive di URL slug-nya (`/penyakit/`, `/obat/`, dll)
+- Template: `templates/archive-health-wiki.php` — gunakan `get_header()` / `get_footer()`
+- Data dari `Health_Wiki_Archive::get_data()` — return array dengan grouped posts
+- Filter huruf via `?huruf=X` query param (sanitized)
+- Search form redirect ke WordPress native search dengan `post_type` filter
+- Schema: `CollectionPage` + `BreadcrumbList`
+- Tidak ada JS — semua server-side rendered
+
 ## Relasi Antar CPT
 
 Field pattern: `hw_{cpt}_rel_{target}` (ACF Relationship, return format: object)

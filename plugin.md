@@ -45,11 +45,33 @@ health-wiki/
 │   ├── class-health-wiki-template.php  # Render konten via the_content filter
 │   ├── class-health-wiki-schema.php    # JSON-LD structured data
 │   ├── class-health-wiki-seo.php       # Meta tags, OG, Twitter, canonical
-│   └── class-health-wiki-performance.php # Inline CSS, lazy load, cleanup
-└── assets/css/health-wiki.css          # Styling (di-inline saat render)
+│   ├── class-health-wiki-performance.php # Inline CSS, lazy load, cleanup
+│   └── class-health-wiki-archive.php    # Archive A-Z listing, SEO, schema
+├── templates/
+│   └── archive-health-wiki.php          # Archive template (A-Z)
+└── assets/css/health-wiki.css           # Styling (di-inline saat render)
 ```
 
-## Template
+## Halaman Archive A-Z
+
+Setiap CPT memiliki halaman archive dengan:
+- Judul: "Daftar Penyakit", "Daftar Obat", dll
+- Search box (redirect ke WordPress search dengan `post_type` filter)
+- Navigasi A-Z (letter links, huruf tanpa konten di-disable, tombol "Semua" untuk reset)
+- Daftar post dikelompokkan per huruf, diurutkan A-Z
+- Total counter
+
+URL: `/penyakit/`, `/obat/`, `/organ/`, `/gizi-makanan/`, `/pengobatan/`
+Filter huruf: `/penyakit/?huruf=A`
+
+Template menggunakan `get_header()` / `get_footer()` dari tema aktif.
+Schema: `CollectionPage` + `BreadcrumbList`.
+
+File:
+- `includes/class-health-wiki-archive.php` — logic, SEO, schema
+- `templates/archive-health-wiki.php` — HTML template
+
+## Template (Single)
 
 Plugin menggunakan filter `the_content` (prioritas 20) sehingga kompatibel dengan **single.php tema apapun**. Tidak perlu template khusus.
 
