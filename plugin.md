@@ -46,7 +46,9 @@ health-wiki/
 │   ├── class-health-wiki-schema.php    # JSON-LD structured data
 │   ├── class-health-wiki-seo.php       # Meta tags, OG, Twitter, canonical
 │   ├── class-health-wiki-performance.php # Inline CSS, lazy load, cleanup
-│   └── class-health-wiki-archive.php    # Archive A-Z listing, SEO, schema
+│   ├── class-health-wiki-archive.php    # Archive A-Z listing, SEO, schema
+│   ├── class-health-wiki-autolink.php   # Auto internal linking
+│   └── class-health-wiki-cards.php      # Post type cards widget + shortcode
 ├── templates/
 │   └── archive-health-wiki.php          # Archive template (A-Z)
 └── assets/css/health-wiki.css           # Styling (di-inline saat render)
@@ -70,6 +72,44 @@ Schema: `CollectionPage` + `BreadcrumbList`.
 File:
 - `includes/class-health-wiki-archive.php` — logic, SEO, schema
 - `templates/archive-health-wiki.php` — HTML template
+
+## Auto Internal Linking
+
+Otomatis mengubah keyword di konten menjadi internal link jika cocok dengan judul post dari semua HW post types + regular post.
+
+Aturan SEO:
+- Hanya link occurrence pertama per keyword
+- Max 10 auto-link per halaman
+- Tidak link ke diri sendiri (current post)
+- Skip di dalam tag: `<a>`, `<h1>`-`<h6>`, `<script>`, `<style>`, `<code>`, `<pre>`
+- Keyword min 3 karakter, longest match first
+- Internal link tanpa `nofollow`
+- Cache 1 jam via transient, auto-clear saat post disimpan
+
+File: `includes/class-health-wiki-autolink.php`
+
+## Post Type Cards
+
+Widget visual menampilkan semua CPT dalam grid card (thumbnail/icon, label, jumlah post).
+
+Panggil di PHP:
+```php
+echo hw_post_type_cards();
+echo hw_post_type_cards( [ 'columns' => 3, 'show_post' => true ] );
+```
+
+Shortcode:
+```
+[hw_post_type_cards]
+[hw_post_type_cards columns="3" show_post="1"]
+```
+
+Parameter:
+- `columns` (2-6): jumlah kolom grid, default 5
+- `show_post` (bool): tampilkan juga post type 'post'
+- `post_types` (array, PHP only): override CPT list
+
+File: `includes/class-health-wiki-cards.php`
 
 ## Template (Single)
 

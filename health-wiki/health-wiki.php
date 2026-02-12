@@ -53,6 +53,8 @@ require_once HW_PATH . 'includes/class-health-wiki-schema.php';
 require_once HW_PATH . 'includes/class-health-wiki-seo.php';
 require_once HW_PATH . 'includes/class-health-wiki-performance.php';
 require_once HW_PATH . 'includes/class-health-wiki-archive.php';
+require_once HW_PATH . 'includes/class-health-wiki-autolink.php';
+require_once HW_PATH . 'includes/class-health-wiki-cards.php';
 
 add_action( 'init', [ Health_Wiki_CPT::class, 'register' ], 5 );
 add_action( 'acf/init', [ Health_Wiki_ACF::class, 'register' ] );
@@ -62,6 +64,8 @@ Health_Wiki_Schema::init();
 Health_Wiki_SEO::init();
 Health_Wiki_Performance::init();
 Health_Wiki_Archive::init();
+Health_Wiki_Autolink::init();
+Health_Wiki_Cards::init();
 
 register_activation_hook( __FILE__, static function (): void {
     Health_Wiki_CPT::register();

@@ -50,6 +50,23 @@
 - Capability check untuk admin operations
 - Tidak ada file upload handler kustom
 
+## Auto Internal Linking
+
+- Class: `Health_Wiki_Autolink`, hook `the_content` priority 30 (setelah template priority 20)
+- Berlaku di semua `is_singular()` (termasuk regular post)
+- Cache keyword di transient `hw_autolink_keywords` (1 jam), clear on `save_post` / `delete_post`
+- Max 10 link per halaman, min 3 karakter keyword
+- Skip tags: `<a>`, `<h1>`-`<h6>`, `<script>`, `<style>`, `<code>`, `<pre>`, `<button>`
+- Longest keyword matched first, case-insensitive, word boundary
+
+## Post Type Cards
+
+- Class: `Health_Wiki_Cards`, shortcode `[hw_post_type_cards]`
+- PHP: `echo hw_post_type_cards( $args )`
+- Args: `columns` (2-6), `show_post` (bool), `post_types` (array)
+- Thumbnail dari featured image post terbaru, fallback ke SVG icon
+- CSS grid responsive (5 kolom desktop, 2 kolom mobile)
+
 ## Archive A-Z
 
 - Setiap CPT punya halaman archive di URL slug-nya (`/penyakit/`, `/obat/`, dll)
