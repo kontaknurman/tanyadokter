@@ -1,0 +1,65 @@
+/* Health Wiki — Minimal CSS for medical wiki content */
+:root{--hw-primary:#1a73e8;--hw-primary-light:#e8f0fe;--hw-text:#202124;--hw-text-sec:#5f6368;--hw-border:#dadce0;--hw-bg:#f8f9fa;--hw-white:#fff;--hw-radius:8px;--hw-gap:1.5rem}
+
+/* Article wrapper */
+.hw-article{max-width:780px;margin:0 auto;color:var(--hw-text);font-size:1rem;line-height:1.75}
+
+/* Breadcrumb */
+.hw-breadcrumb{margin-bottom:var(--hw-gap);font-size:.85rem;color:var(--hw-text-sec)}
+.hw-breadcrumb ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.25rem}
+.hw-breadcrumb li:not(:last-child)::after{content:"›";margin-left:.25rem;color:var(--hw-border)}
+.hw-breadcrumb a{color:var(--hw-primary);text-decoration:none}
+.hw-breadcrumb a:hover{text-decoration:underline}
+
+/* Overview card */
+.hw-overview{background:var(--hw-primary-light);border-left:4px solid var(--hw-primary);border-radius:var(--hw-radius);padding:1.25rem 1.5rem;margin-bottom:var(--hw-gap)}
+.hw-overview h2{font-size:1.1rem;margin:0 0 .75rem;color:var(--hw-primary)}
+.hw-overview__desc{margin:0 0 .75rem;color:var(--hw-text-sec)}
+.hw-overview__meta{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.35rem .75rem}
+.hw-overview__meta dt{font-weight:600;white-space:nowrap}
+.hw-overview__meta dd{margin:0}
+
+/* Table of Contents */
+.hw-toc{background:var(--hw-bg);border:1px solid var(--hw-border);border-radius:var(--hw-radius);padding:1rem 1.5rem;margin-bottom:var(--hw-gap)}
+.hw-toc h2{font-size:1rem;margin:0 0 .5rem}
+.hw-toc ol{margin:0;padding-left:1.25rem}
+.hw-toc li{margin:.25rem 0}
+.hw-toc a{color:var(--hw-primary);text-decoration:none}
+.hw-toc a:hover{text-decoration:underline}
+
+/* Content sections */
+.hw-section{margin-bottom:var(--hw-gap);padding-bottom:var(--hw-gap);border-bottom:1px solid var(--hw-border)}
+.hw-section:last-of-type{border-bottom:none}
+.hw-section h2{font-size:1.35rem;color:var(--hw-text);margin:0 0 .75rem;scroll-margin-top:80px}
+.hw-section ul{padding-left:1.25rem;margin:.5rem 0}
+.hw-section li{margin:.35rem 0}
+.hw-section__content p{margin:.5rem 0}
+.hw-section__content img{max-width:100%;height:auto;border-radius:var(--hw-radius)}
+
+/* Nutrition table */
+.hw-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hw-nutrition-table{width:100%;border-collapse:collapse;font-size:.95rem}
+.hw-nutrition-table th,.hw-nutrition-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--hw-border)}
+.hw-nutrition-table thead th{background:var(--hw-bg);font-weight:600;position:sticky;top:0}
+.hw-nutrition-table tbody tr:hover{background:var(--hw-bg)}
+
+/* References */
+.hw-references{font-size:.9rem;color:var(--hw-text-sec);margin-top:var(--hw-gap)}
+.hw-references h2{font-size:1.1rem;color:var(--hw-text)}
+.hw-references ol{padding-left:1.25rem}
+.hw-references a{color:var(--hw-primary);word-break:break-all}
+
+/* Body content from editor */
+.hw-body{margin-bottom:var(--hw-gap)}
+.hw-body img{max-width:100%;height:auto}
+
+/* Responsive */
+@media(max-width:600px){
+.hw-article{font-size:.95rem}
+.hw-overview{padding:1rem}
+.hw-overview__meta{grid-template-columns:1fr;gap:.25rem}
+.hw-overview__meta dt{margin-top:.35rem}
+.hw-section h2{font-size:1.2rem}
+.hw-nutrition-table{font-size:.85rem}
+.hw-nutrition-table th,.hw-nutrition-table td{padding:.4rem .5rem}
+}
