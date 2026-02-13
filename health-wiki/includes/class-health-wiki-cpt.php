@@ -1,4 +1,13 @@
 <?php
+/**
+ * Registrasi Custom Post Type dan Taxonomy.
+ *
+ * 5 CPT: Penyakit, Obat, Organ Tubuh, Kandungan Gizi, Pengobatan.
+ * 5 Taxonomy: Kategori per CPT.
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,11 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Health_Wiki_CPT {
 
+    /**
+     * Daftarkan semua CPT dan taxonomy.
+     */
     public static function register(): void {
         self::register_post_types();
         self::register_taxonomies();
     }
 
+    /**
+     * Daftarkan 5 Custom Post Type.
+     */
     private static function register_post_types(): void {
         $types = [
             HW_CPT_PENYAKIT   => [ 'Penyakit', 'penyakit', 'dashicons-heart' ],
@@ -34,6 +49,9 @@ final class Health_Wiki_CPT {
         }
     }
 
+    /**
+     * Daftarkan taxonomy kategori untuk setiap CPT.
+     */
     private static function register_taxonomies(): void {
         $taxonomies = [
             'hw_kategori_penyakit'   => [ HW_CPT_PENYAKIT, 'Kategori Penyakit', 'kategori-penyakit' ],
@@ -55,6 +73,9 @@ final class Health_Wiki_CPT {
         }
     }
 
+    /**
+     * Label untuk CPT dalam Bahasa Indonesia.
+     */
     private static function labels( string $name ): array {
         return [
             'name'               => $name,
@@ -72,6 +93,9 @@ final class Health_Wiki_CPT {
         ];
     }
 
+    /**
+     * Label untuk taxonomy dalam Bahasa Indonesia.
+     */
     private static function tax_labels( string $name ): array {
         return [
             'name'          => $name,
@@ -79,7 +103,7 @@ final class Health_Wiki_CPT {
             'search_items'  => 'Cari ' . $name,
             'all_items'     => 'Semua ' . $name,
             'edit_item'     => 'Edit ' . $name,
-            'update_item'   => 'Update ' . $name,
+            'update_item'   => 'Perbarui ' . $name,
             'add_new_item'  => 'Tambah ' . $name,
             'new_item_name' => $name . ' Baru',
         ];

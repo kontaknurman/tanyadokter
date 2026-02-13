@@ -1,4 +1,16 @@
 <?php
+/**
+ * Render konten terstruktur Health Wiki di halaman single.
+ *
+ * Menggunakan filter the_content (prioritas 20) sehingga
+ * kompatibel dengan single.php tema apapun tanpa template khusus.
+ *
+ * Konten: breadcrumb, overview, isi editor, daftar isi,
+ * section ACF, artikel terkait, referensi.
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,8 +24,8 @@ final class Health_Wiki_Template {
     }
 
     /**
-     * Inject structured Health Wiki content on single CPT pages.
-     * Uses the theme's single.php — only the_content is modified.
+     * Sisipkan konten terstruktur Health Wiki di halaman single CPT.
+     * Hanya memodifikasi the_content — tema tetap menggunakan single.php sendiri.
      */
     public static function render( string $content ): string {
         if ( ! is_singular( HW_POST_TYPES ) || ! in_the_loop() || ! is_main_query() ) {
@@ -59,7 +71,7 @@ final class Health_Wiki_Template {
         return $html;
     }
 
-    /* ── Breadcrumb ───────────────────────────────────────── */
+    /* ── Breadcrumb (Navigasi Jejak) ─────────────────────── */
 
     private static function breadcrumb( string $post_type ): string {
         $labels = [
@@ -85,7 +97,7 @@ final class Health_Wiki_Template {
         );
     }
 
-    /* ── Overview Cards ───────────────────────────────────── */
+    /* ── Kartu Ringkasan ─────────────────────────────────── */
 
     private static function overview( int $post_id, string $post_type ): string {
         $rows = match ( $post_type ) {
@@ -145,11 +157,12 @@ final class Health_Wiki_Template {
         return $html;
     }
 
+    /** Buat baris data ringkasan (label → nilai). */
     private static function ov_row( string $label, string $value ): ?array {
         return $value ? [ $label, $value ] : null;
     }
 
-    /* ── Sections per CPT ─────────────────────────────────── */
+    /* ── Section per CPT ─────────────────────────────────── */
 
     private static function sections_penyakit( int $id ): array {
         return array_filter( [
@@ -188,7 +201,7 @@ final class Health_Wiki_Template {
     private static function sections_gizi( int $id ): array {
         $sections = [];
 
-        // Nutrition table
+        /* Tabel kandungan gizi */
         $kandungan = get_field( 'hw_gizi_kandungan', $id );
         if ( $kandungan && is_array( $kandungan ) ) {
             $table = '<section class="hw-section" id="kandungan-gizi">';
@@ -226,8 +239,9 @@ final class Health_Wiki_Template {
         ] );
     }
 
-    /* ── Section Builders ─────────────────────────────────── */
+    /* ── Pembangun Section ───────────────────────────────── */
 
+    /** Render section dari field repeater (daftar item). */
     private static function repeater_section( int $id, string $field, string $title, string $slug, string $sub ): ?array {
         $rows = get_field( $field, $id );
         if ( ! $rows || ! is_array( $rows ) ) {
@@ -247,6 +261,7 @@ final class Health_Wiki_Template {
         return [ 'title' => $title, 'id' => $slug, 'html' => $html ];
     }
 
+    /** Render section dari field WYSIWYG (konten HTML). */
     private static function wysiwyg_section( int $id, string $field, string $title, string $slug ): ?array {
         $value = get_field( $field, $id );
         if ( ! $value ) {
@@ -261,6 +276,7 @@ final class Health_Wiki_Template {
         return [ 'title' => $title, 'id' => $slug, 'html' => $html ];
     }
 
+    /** Render section dari field teks biasa. */
     private static function text_section( int $id, string $field, string $title, string $slug ): ?array {
         $value = (string) get_field( $field, $id );
         if ( ! $value ) {
@@ -275,8 +291,9 @@ final class Health_Wiki_Template {
         return [ 'title' => $title, 'id' => $slug, 'html' => $html ];
     }
 
-    /* ── Table of Contents ────────────────────────────────── */
+    /* ── Daftar Isi ──────────────────────────────────────── */
 
+    /** Buat navigasi daftar isi dari section yang tersedia. */
     private static function toc( array $sections ): string {
         if ( count( $sections ) < 2 ) {
             return '';
@@ -290,8 +307,9 @@ final class Health_Wiki_Template {
         return $html;
     }
 
-    /* ── References ───────────────────────────────────────── */
+    /* ── Referensi ───────────────────────────────────────── */
 
+    /** Render daftar referensi/sumber pustaka. */
     private static function references( int $id, string $post_type ): string {
         $field = match ( $post_type ) {
             HW_CPT_PENYAKIT   => 'hw_penyakit_referensi',
@@ -325,8 +343,9 @@ final class Health_Wiki_Template {
         return $html;
     }
 
-    /* ── Related Posts ────────────────────────────────────── */
+    /* ── Artikel Terkait ─────────────────────────────────── */
 
+    /** Render section artikel terkait dari field relasi antar CPT. */
     private static function related_posts( int $id, string $post_type ): string {
         $fields = match ( $post_type ) {
             HW_CPT_PENYAKIT   => [
@@ -384,6 +403,7 @@ final class Health_Wiki_Template {
             . '</section>';
     }
 
+    /** Ambil label CPT dalam Bahasa Indonesia. */
     private static function cpt_label( string $post_type ): string {
         return match ( $post_type ) {
             HW_CPT_PENYAKIT   => 'Penyakit',
@@ -395,8 +415,9 @@ final class Health_Wiki_Template {
         };
     }
 
-    /* ── Label Helpers ────────────────────────────────────── */
+    /* ── Pembantu Label ──────────────────────────────────── */
 
+    /** Label kategori obat. */
     private static function obat_kategori_label( string $key ): string {
         return match ( $key ) {
             'resep'          => 'Obat Resep',
@@ -406,6 +427,7 @@ final class Health_Wiki_Template {
         };
     }
 
+    /** Label kategori gizi makanan. */
     private static function gizi_kategori_label( string $key ): string {
         return match ( $key ) {
             'buah'        => 'Buah-buahan',
@@ -419,6 +441,7 @@ final class Health_Wiki_Template {
         };
     }
 
+    /** Label jenis pengobatan. */
     private static function pengobatan_jenis_label( string $key ): string {
         return match ( $key ) {
             'medis'        => 'Medis',

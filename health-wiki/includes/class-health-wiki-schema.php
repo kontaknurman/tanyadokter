@@ -1,4 +1,19 @@
 <?php
+/**
+ * Schema.org JSON-LD untuk semua CPT Health Wiki.
+ *
+ * Menghasilkan structured data:
+ * - WebPage / MedicalWebPage
+ * - BreadcrumbList
+ * - MedicalCondition (Penyakit)
+ * - Drug (Obat)
+ * - AnatomicalStructure (Organ)
+ * - Article + NutritionInformation (Gizi)
+ * - MedicalTherapy / SurgicalProcedure (Pengobatan)
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,6 +26,9 @@ final class Health_Wiki_Schema {
         add_action( 'wp_head', [ __CLASS__, 'output' ], 1 );
     }
 
+    /**
+     * Cetak JSON-LD schema di wp_head untuk halaman single CPT.
+     */
     public static function output(): void {
         if ( ! is_singular( HW_POST_TYPES ) ) {
             return;
@@ -25,13 +43,13 @@ final class Health_Wiki_Schema {
 
         $schemas = [];
 
-        // WebPage
+        /* WebPage */
         $schemas[] = self::webpage( $post_id, $post_type );
 
-        // BreadcrumbList
+        /* BreadcrumbList */
         $schemas[] = self::breadcrumb_schema( $post_type );
 
-        // Type-specific schema
+        /* Schema spesifik per tipe konten */
         $specific = match ( $post_type ) {
             HW_CPT_PENYAKIT   => self::medical_condition( $post_id ),
             HW_CPT_OBAT       => self::drug( $post_id ),
@@ -58,6 +76,7 @@ final class Health_Wiki_Schema {
 
     /* ── WebPage ──────────────────────────────────────────── */
 
+    /** Buat schema WebPage atau MedicalWebPage. */
     private static function webpage( int $id, string $post_type ): array {
         $page_type = match ( $post_type ) {
             HW_CPT_PENYAKIT, HW_CPT_OBAT, HW_CPT_PENGOBATAN => 'MedicalWebPage',
@@ -71,6 +90,7 @@ final class Health_Wiki_Schema {
             'url'           => get_permalink( $id ),
             'datePublished' => get_the_date( 'c', $id ),
             'dateModified'  => get_the_modified_date( 'c', $id ),
+            'inLanguage'    => 'id-ID',
             'publisher'     => [
                 '@type' => 'Organization',
                 'name'  => get_bloginfo( 'name' ),
@@ -81,6 +101,7 @@ final class Health_Wiki_Schema {
 
     /* ── BreadcrumbList ───────────────────────────────────── */
 
+    /** Buat schema BreadcrumbList untuk navigasi jejak. */
     private static function breadcrumb_schema( string $post_type ): array {
         $labels = [
             HW_CPT_PENYAKIT   => [ 'Penyakit', 'penyakit' ],
@@ -117,8 +138,9 @@ final class Health_Wiki_Schema {
         ];
     }
 
-    /* ── Related Links ────────────────────────────────────── */
+    /* ── Link Terkait ────────────────────────────────────── */
 
+    /** Kumpulkan URL semua post terkait dari field relasi. */
     private static function get_related_links( int $id, string $post_type ): array {
         $fields = match ( $post_type ) {
             HW_CPT_PENYAKIT   => [ 'hw_penyakit_rel_obat', 'hw_penyakit_rel_organ', 'hw_penyakit_rel_pengobatan', 'hw_penyakit_rel_gizi' ],
@@ -148,6 +170,7 @@ final class Health_Wiki_Schema {
 
     /* ── MedicalCondition (Penyakit) ──────────────────────── */
 
+    /** Buat schema MedicalCondition untuk halaman penyakit. */
     private static function medical_condition( int $id ): array {
         $schema = [
             '@context'    => 'https://schema.org',
@@ -191,6 +214,7 @@ final class Health_Wiki_Schema {
 
     /* ── Drug (Obat) ──────────────────────────────────────── */
 
+    /** Buat schema Drug untuk halaman obat. */
     private static function drug( int $id ): array {
         $schema = [
             '@context'      => 'https://schema.org',
@@ -223,8 +247,9 @@ final class Health_Wiki_Schema {
         return $schema;
     }
 
-    /* ── AnatomicalStructure (Organ) ──────────────────────── */
+    /* ── AnatomicalStructure (Organ Tubuh) ────────────────── */
 
+    /** Buat schema AnatomicalStructure untuk halaman organ tubuh. */
     private static function anatomical_structure( int $id ): array {
         $schema = [
             '@context'    => 'https://schema.org',
@@ -260,8 +285,9 @@ final class Health_Wiki_Schema {
         return $schema;
     }
 
-    /* ── Article + NutritionInformation (Gizi) ────────────── */
+    /* ── Article + NutritionInformation (Kandungan Gizi) ──── */
 
+    /** Buat schema Article + NutritionInformation untuk halaman gizi. */
     private static function nutrition_article( int $id ): array {
         $schema = [
             '@context'    => 'https://schema.org',
@@ -269,6 +295,7 @@ final class Health_Wiki_Schema {
             'name'        => get_the_title( $id ),
             'url'         => get_permalink( $id ),
             'description' => (string) get_field( 'hw_gizi_ringkasan', $id ),
+            'inLanguage'  => 'id-ID',
             'about'       => [ '@type' => 'NutritionInformation' ],
         ];
 
@@ -282,6 +309,7 @@ final class Health_Wiki_Schema {
 
     /* ── MedicalTherapy (Pengobatan) ──────────────────────── */
 
+    /** Buat schema MedicalTherapy atau SurgicalProcedure untuk halaman pengobatan. */
     private static function medical_therapy( int $id ): array {
         $jenis = (string) get_field( 'hw_pengobatan_jenis', $id );
 

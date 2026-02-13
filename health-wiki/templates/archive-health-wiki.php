@@ -1,8 +1,11 @@
 <?php
 /**
- * Archive template — A-Z alphabetical listing per CPT.
- * Loaded via Health_Wiki_Archive::load_template().
- * Uses theme's header.php and footer.php for compatibility.
+ * Template Archive — Daftar alfabet A-Z per CPT.
+ *
+ * Dimuat via Health_Wiki_Archive::load_template().
+ * Menggunakan header.php dan footer.php dari tema aktif.
+ *
+ * @package HealthWiki
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

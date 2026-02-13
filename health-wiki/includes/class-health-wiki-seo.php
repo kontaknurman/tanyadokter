@@ -1,4 +1,18 @@
 <?php
+/**
+ * SEO — Meta tags, Open Graph, Twitter Card, dan judul dokumen.
+ *
+ * Mengelola:
+ * - Meta description dari field ringkasan (maks 160 karakter)
+ * - Open Graph tags (og:title, og:description, og:image, dll)
+ * - Twitter Card (summary_large_image)
+ * - Canonical URL
+ * - Robots directive
+ * - Judul dokumen otomatis
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,7 +27,7 @@ final class Health_Wiki_SEO {
     }
 
     /**
-     * Output meta description, Open Graph, and Twitter Card tags.
+     * Cetak meta description, Open Graph, dan Twitter Card tags.
      */
     public static function meta_tags(): void {
         if ( ! is_singular( HW_POST_TYPES ) ) {
@@ -46,20 +60,20 @@ final class Health_Wiki_SEO {
 
         $meta_title = $title . ' — ' . $type_label . ' | ' . $site_name;
 
-        // Meta description
+        /* Meta description */
         if ( $description ) {
             printf( '<meta name="description" content="%s">' . "\n", esc_attr( $description ) );
         }
 
-        // Canonical
+        /* Canonical URL */
         printf( '<link rel="canonical" href="%s">' . "\n", esc_url( $url ) );
 
-        // Open Graph
+        /* Open Graph */
         echo '<meta property="og:type" content="article">' . "\n";
         printf( '<meta property="og:title" content="%s">' . "\n", esc_attr( $meta_title ) );
         printf( '<meta property="og:url" content="%s">' . "\n", esc_url( $url ) );
         printf( '<meta property="og:site_name" content="%s">' . "\n", esc_attr( $site_name ) );
-        printf( '<meta property="og:locale" content="id_ID">' . "\n" );
+        echo '<meta property="og:locale" content="id_ID">' . "\n";
 
         if ( $description ) {
             printf( '<meta property="og:description" content="%s">' . "\n", esc_attr( $description ) );
@@ -74,7 +88,7 @@ final class Health_Wiki_SEO {
             printf( '<meta property="article:modified_time" content="%s">' . "\n", esc_attr( $modified ) );
         }
 
-        // Twitter Card
+        /* Twitter Card */
         echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
         printf( '<meta name="twitter:title" content="%s">' . "\n", esc_attr( $meta_title ) );
         if ( $description ) {
@@ -84,12 +98,13 @@ final class Health_Wiki_SEO {
             printf( '<meta name="twitter:image" content="%s">' . "\n", esc_url( $image ) );
         }
 
-        // Robots
+        /* Robots */
         echo '<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">' . "\n";
     }
 
     /**
-     * Enhance document title for Health Wiki pages.
+     * Perkaya judul dokumen untuk halaman Health Wiki.
+     * Format: "{Nama} — {Konteks SEO} | {Nama Situs}"
      */
     public static function title( array $parts ): array {
         if ( ! is_singular( HW_POST_TYPES ) ) {
@@ -114,7 +129,8 @@ final class Health_Wiki_SEO {
     }
 
     /**
-     * Get meta description from ACF ringkasan or excerpt.
+     * Ambil deskripsi meta dari field ringkasan ACF atau excerpt.
+     * Dibatasi maksimal 160 karakter untuk SEO optimal.
      */
     private static function get_description( int $id, string $post_type ): string {
         $field = match ( $post_type ) {
@@ -132,7 +148,7 @@ final class Health_Wiki_SEO {
             $desc = get_the_excerpt( $id );
         }
 
-        // Limit to ~160 chars for meta description
+        /* Batasi ~160 karakter untuk meta description */
         if ( mb_strlen( $desc ) > 160 ) {
             $desc = mb_substr( $desc, 0, 157 ) . '...';
         }

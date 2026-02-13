@@ -1,4 +1,18 @@
 <?php
+/**
+ * Halaman Archive A-Z — daftar alfabet per CPT.
+ *
+ * Fitur:
+ * - Template kustom dengan get_header() / get_footer() dari tema
+ * - Pengelompokan post per huruf A-Z
+ * - Filter per huruf via ?huruf=X
+ * - Kotak pencarian terintegrasi WordPress search
+ * - SEO: meta tags, schema CollectionPage + BreadcrumbList
+ * - Judul dokumen otomatis
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,6 +30,7 @@ final class Health_Wiki_Archive {
 
     /* ── Template ─────────────────────────────────────────── */
 
+    /** Muat template archive kustom jika halaman archive CPT. */
     public static function load_template( string $template ): string {
         if ( ! is_post_type_archive( HW_POST_TYPES ) ) {
             return $template;
@@ -24,8 +39,9 @@ final class Health_Wiki_Archive {
         return file_exists( $custom ) ? $custom : $template;
     }
 
-    /* ── Data for template ────────────────────────────────── */
+    /* ── Data untuk Template ─────────────────────────────── */
 
+    /** Ambil data archive: post dikelompokkan per huruf, info navigasi. */
     public static function get_data(): array {
         $obj       = get_queried_object();
         $post_type = $obj->name ?? '';
@@ -70,8 +86,9 @@ final class Health_Wiki_Archive {
         ];
     }
 
-    /* ── Document Title ───────────────────────────────────── */
+    /* ── Judul Dokumen ───────────────────────────────────── */
 
+    /** Override judul dokumen untuk halaman archive. */
     public static function title( array $parts ): array {
         if ( ! is_post_type_archive( HW_POST_TYPES ) ) {
             return $parts;
@@ -81,8 +98,9 @@ final class Health_Wiki_Archive {
         return $parts;
     }
 
-    /* ── Meta Tags ────────────────────────────────────────── */
+    /* ── Meta Tags SEO ───────────────────────────────────── */
 
+    /** Cetak meta tags SEO untuk halaman archive. */
     public static function meta_tags(): void {
         if ( ! is_post_type_archive( HW_POST_TYPES ) ) {
             return;
@@ -106,8 +124,9 @@ final class Health_Wiki_Archive {
         echo '<meta name="robots" content="index, follow">' . "\n";
     }
 
-    /* ── Schema ───────────────────────────────────────────── */
+    /* ── Schema JSON-LD ──────────────────────────────────── */
 
+    /** Cetak schema CollectionPage + BreadcrumbList untuk archive. */
     public static function schema(): void {
         if ( ! is_post_type_archive( HW_POST_TYPES ) ) {
             return;
@@ -125,6 +144,7 @@ final class Health_Wiki_Archive {
                 'name'        => $title,
                 'url'         => $url,
                 'description' => $title . ' dari A sampai Z',
+                'inLanguage'  => 'id-ID',
                 'isPartOf'    => [
                     '@type' => 'WebSite',
                     'name'  => get_bloginfo( 'name' ),
@@ -148,8 +168,9 @@ final class Health_Wiki_Archive {
         }
     }
 
-    /* ── Helpers ──────────────────────────────────────────── */
+    /* ── Fungsi Pembantu ─────────────────────────────────── */
 
+    /** Judul archive dalam Bahasa Indonesia per CPT. */
     private static function archive_title( string $post_type ): string {
         return match ( $post_type ) {
             HW_CPT_PENYAKIT   => 'Daftar Penyakit',
@@ -161,14 +182,15 @@ final class Health_Wiki_Archive {
         };
     }
 
+    /** Placeholder kotak pencarian per CPT. */
     private static function search_placeholder( string $post_type ): string {
         return match ( $post_type ) {
-            HW_CPT_PENYAKIT   => 'Pencarian Penyakit',
-            HW_CPT_OBAT       => 'Pencarian Obat',
-            HW_CPT_ORGAN      => 'Pencarian Organ Tubuh',
-            HW_CPT_GIZI       => 'Pencarian Kandungan Gizi',
-            HW_CPT_PENGOBATAN => 'Pencarian Pengobatan',
-            default           => 'Pencarian',
+            HW_CPT_PENYAKIT   => 'Cari nama penyakit...',
+            HW_CPT_OBAT       => 'Cari nama obat...',
+            HW_CPT_ORGAN      => 'Cari organ tubuh...',
+            HW_CPT_GIZI       => 'Cari kandungan gizi...',
+            HW_CPT_PENGOBATAN => 'Cari metode pengobatan...',
+            default           => 'Cari...',
         };
     }
 }

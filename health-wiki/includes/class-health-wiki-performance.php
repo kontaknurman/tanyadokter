@@ -1,4 +1,16 @@
 <?php
+/**
+ * Optimasi performa — CSS inline, lazy loading, dan pembersihan.
+ *
+ * Strategi:
+ * - CSS di-inline langsung (tanpa render-blocking request)
+ * - DNS prefetch untuk sumber daya eksternal
+ * - Lazy loading dipaksa untuk semua gambar
+ * - Emoji scripts dihapus di halaman wiki
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,7 +24,7 @@ final class Health_Wiki_Performance {
         add_action( 'wp_head', [ __CLASS__, 'preconnect' ], 0 );
         add_filter( 'wp_lazy_loading_enabled', [ __CLASS__, 'lazy_load' ], 10, 2 );
 
-        // Remove emoji scripts on HW pages for cleaner output.
+        /* Hapus emoji scripts di halaman HW untuk output lebih bersih. */
         if ( self::is_hw_request() ) {
             remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
             remove_action( 'wp_print_styles', 'print_emoji_styles' );
@@ -20,7 +32,7 @@ final class Health_Wiki_Performance {
     }
 
     /**
-     * Enqueue minimal CSS; inline it for zero render-blocking.
+     * Muat CSS minimal; inline langsung untuk zero render-blocking.
      */
     public static function assets(): void {
         if ( ! is_singular( HW_POST_TYPES ) && ! is_post_type_archive( HW_POST_TYPES ) ) {
@@ -30,18 +42,18 @@ final class Health_Wiki_Performance {
         $css_file = HW_PATH . 'assets/css/health-wiki.css';
 
         if ( file_exists( $css_file ) ) {
-            $css = file_get_contents( $css_file );
+            $css = file_get_contents( $css_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- file lokal
             if ( $css ) {
-                // Inline CSS — eliminates render-blocking request.
+                /* Inline CSS — menghilangkan render-blocking request. */
                 add_action( 'wp_head', static function () use ( $css ): void {
-                    echo '<style id="hw-inline-css">' . $css . '</style>' . "\n";
+                    echo '<style id="hw-inline-css">' . wp_strip_all_tags( $css ) . '</style>' . "\n";
                 }, 5 );
             }
         }
     }
 
     /**
-     * DNS prefetch and preconnect hints.
+     * DNS prefetch dan preconnect hints.
      */
     public static function preconnect(): void {
         if ( ! is_singular( HW_POST_TYPES ) ) {
@@ -51,7 +63,7 @@ final class Health_Wiki_Performance {
     }
 
     /**
-     * Ensure lazy loading for images.
+     * Paksa lazy loading untuk gambar di halaman wiki.
      */
     public static function lazy_load( bool $default, string $tag_name ): bool {
         if ( 'img' === $tag_name && is_singular( HW_POST_TYPES ) ) {
@@ -61,10 +73,10 @@ final class Health_Wiki_Performance {
     }
 
     /**
-     * Rough check if this might be a HW page (runs before query is set up).
+     * Deteksi kasar apakah request ini untuk halaman HW (berjalan sebelum query tersedia).
      */
     private static function is_hw_request(): bool {
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
         $slugs = [ '/penyakit/', '/obat/', '/organ/', '/gizi-makanan/', '/pengobatan/' ];
         foreach ( $slugs as $slug ) {
             if ( str_contains( $uri, $slug ) ) {

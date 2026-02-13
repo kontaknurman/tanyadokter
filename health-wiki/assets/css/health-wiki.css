@@ -1,17 +1,17 @@
-/* Health Wiki — Minimal CSS for medical wiki content */
+/* Health Wiki — CSS minimal untuk konten wiki kesehatan */
 :root{--hw-primary:#1a73e8;--hw-primary-light:#e8f0fe;--hw-text:#202124;--hw-text-sec:#5f6368;--hw-border:#dadce0;--hw-bg:#f8f9fa;--hw-white:#fff;--hw-radius:8px;--hw-gap:1.5rem}
 
-/* Article wrapper */
+/* Pembungkus artikel */
 .hw-article{max-width:780px;margin:0 auto;color:var(--hw-text);font-size:1rem;line-height:1.75}
 
-/* Breadcrumb */
+/* Breadcrumb (navigasi jejak) */
 .hw-breadcrumb{margin-bottom:var(--hw-gap);font-size:.85rem;color:var(--hw-text-sec)}
 .hw-breadcrumb ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.25rem}
 .hw-breadcrumb li:not(:last-child)::after{content:"›";margin-left:.25rem;color:var(--hw-border)}
 .hw-breadcrumb a{color:var(--hw-primary);text-decoration:none}
 .hw-breadcrumb a:hover{text-decoration:underline}
 
-/* Overview card */
+/* Kartu ringkasan */
 .hw-overview{background:var(--hw-primary-light);border-left:4px solid var(--hw-primary);border-radius:var(--hw-radius);padding:1.25rem 1.5rem;margin-bottom:var(--hw-gap)}
 .hw-overview h2{font-size:1.1rem;margin:0 0 .75rem;color:var(--hw-primary)}
 .hw-overview__desc{margin:0 0 .75rem;color:var(--hw-text-sec)}
@@ -19,7 +19,7 @@
 .hw-overview__meta dt{font-weight:600;white-space:nowrap}
 .hw-overview__meta dd{margin:0}
 
-/* Table of Contents */
+/* Daftar isi */
 .hw-toc{background:var(--hw-bg);border:1px solid var(--hw-border);border-radius:var(--hw-radius);padding:1rem 1.5rem;margin-bottom:var(--hw-gap)}
 .hw-toc h2{font-size:1rem;margin:0 0 .5rem}
 .hw-toc ol{margin:0;padding-left:1.25rem}
@@ -27,7 +27,7 @@
 .hw-toc a{color:var(--hw-primary);text-decoration:none}
 .hw-toc a:hover{text-decoration:underline}
 
-/* Content sections */
+/* Section konten */
 .hw-section{margin-bottom:var(--hw-gap);padding-bottom:var(--hw-gap);border-bottom:1px solid var(--hw-border)}
 .hw-section:last-of-type{border-bottom:none}
 .hw-section h2{font-size:1.35rem;color:var(--hw-text);margin:0 0 .75rem;scroll-margin-top:80px}
@@ -36,14 +36,14 @@
 .hw-section__content p{margin:.5rem 0}
 .hw-section__content img{max-width:100%;height:auto;border-radius:var(--hw-radius)}
 
-/* Nutrition table */
+/* Tabel kandungan gizi */
 .hw-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .hw-nutrition-table{width:100%;border-collapse:collapse;font-size:.95rem}
 .hw-nutrition-table th,.hw-nutrition-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--hw-border)}
 .hw-nutrition-table thead th{background:var(--hw-bg);font-weight:600;position:sticky;top:0}
 .hw-nutrition-table tbody tr:hover{background:var(--hw-bg)}
 
-/* Related Posts */
+/* Artikel terkait */
 .hw-related__group{margin-bottom:1rem}
 .hw-related__group h3{font-size:1.05rem;margin:0 0 .5rem;color:var(--hw-text)}
 .hw-related__group ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:.5rem}
@@ -52,13 +52,13 @@
 .hw-related__group a:hover{background:var(--hw-primary);color:var(--hw-white);text-decoration:none}
 .hw-related__badge{font-size:.75rem;color:var(--hw-text-sec);background:var(--hw-bg);padding:.15rem .4rem;border-radius:4px}
 
-/* References */
+/* Referensi */
 .hw-references{font-size:.9rem;color:var(--hw-text-sec);margin-top:var(--hw-gap)}
 .hw-references h2{font-size:1.1rem;color:var(--hw-text)}
 .hw-references ol{padding-left:1.25rem}
 .hw-references a{color:var(--hw-primary);word-break:break-all}
 
-/* Body content from editor */
+/* Konten dari editor */
 .hw-body{margin-bottom:var(--hw-gap)}
 .hw-body img{max-width:100%;height:auto}
 
@@ -67,14 +67,14 @@
 .hw-archive__container{max-width:780px;margin:0 auto;color:var(--hw-text)}
 .hw-archive__title{font-size:1.75rem;margin:0 0 1.25rem;color:var(--hw-text)}
 
-/* Archive Search */
+/* Pencarian archive */
 .hw-archive__search{display:flex;margin-bottom:1.5rem}
 .hw-archive__search-input{flex:1;padding:.65rem 1rem;border:2px solid var(--hw-border);border-right:none;border-radius:var(--hw-radius) 0 0 var(--hw-radius);font-size:1rem;outline:none;transition:border-color .15s}
 .hw-archive__search-input:focus{border-color:var(--hw-primary)}
 .hw-archive__search-btn{padding:.65rem 1rem;background:var(--hw-primary);color:var(--hw-white);border:2px solid var(--hw-primary);border-radius:0 var(--hw-radius) var(--hw-radius) 0;cursor:pointer;display:flex;align-items:center}
 .hw-archive__search-btn:hover{background:#1557b0}
 
-/* A-Z Navigation */
+/* Navigasi A-Z */
 .hw-archive__az{margin-bottom:1.5rem}
 .hw-archive__az-title{font-size:1rem;margin:0 0 .75rem;color:var(--hw-text-sec);font-weight:normal}
 .hw-archive__az-grid{display:flex;flex-wrap:wrap;gap:.35rem}
@@ -84,7 +84,7 @@ a.hw-archive__letter:hover{background:var(--hw-primary);color:var(--hw-white)}
 .hw-archive__letter--empty{opacity:.3;cursor:default}
 .hw-archive__letter--reset{width:auto;padding:0 .75rem;font-weight:normal;font-size:.85rem;background:var(--hw-primary-light);color:var(--hw-primary)}
 
-/* Archive Post List */
+/* Daftar post archive */
 .hw-archive__group{margin-bottom:1.25rem}
 .hw-archive__group-letter{font-size:1.35rem;color:var(--hw-primary);margin:0 0 .5rem;padding-bottom:.35rem;border-bottom:2px solid var(--hw-primary-light)}
 .hw-archive__group-list{list-style:none;padding:0;margin:0}
@@ -95,11 +95,11 @@ a.hw-archive__letter:hover{background:var(--hw-primary);color:var(--hw-white)}
 .hw-archive__count{font-size:.85rem;color:var(--hw-text-sec);text-align:right;margin-top:1rem}
 .screen-reader-text{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 
-/* Auto Internal Link */
+/* Link internal otomatis */
 a.hw-autolink{color:var(--hw-primary);text-decoration:none;border-bottom:1px dotted var(--hw-primary)}
 a.hw-autolink:hover{border-bottom-style:solid}
 
-/* Post Type Cards */
+/* Kartu post type */
 .hw-cards{display:grid;grid-template-columns:repeat(var(--hw-cards-cols,5),1fr);gap:.75rem;margin:1.5rem 0}
 .hw-cards__item{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1.25rem .75rem;background:var(--hw-white);border:1px solid var(--hw-border);border-radius:var(--hw-radius);text-decoration:none;color:var(--hw-text);transition:box-shadow .15s,border-color .15s}
 .hw-cards__item:hover{border-color:var(--hw-primary);box-shadow:0 2px 8px rgba(26,115,232,.12)}
@@ -109,7 +109,7 @@ a.hw-autolink:hover{border-bottom-style:solid}
 .hw-cards__label{font-size:.9rem;font-weight:600;text-align:center;line-height:1.2}
 .hw-cards__count{font-size:1.1rem;font-weight:700;color:var(--hw-primary)}
 
-/* Responsive */
+/* Responsif */
 @media(max-width:600px){
 .hw-article{font-size:.95rem}
 .hw-overview{padding:1rem}

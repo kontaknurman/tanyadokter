@@ -1,4 +1,14 @@
 <?php
+/**
+ * Registrasi field group ACF Pro secara programatik.
+ *
+ * Mendaftarkan semua field untuk 5 CPT:
+ * Penyakit, Obat, Organ Tubuh, Kandungan Gizi, Pengobatan.
+ * Termasuk field relasi antar CPT.
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -7,6 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 final class Health_Wiki_ACF {
 
+    /**
+     * Daftarkan semua field group. Dipanggil via hook acf/init.
+     */
     public static function register(): void {
         if ( ! function_exists( 'acf_add_local_field_group' ) ) {
             return;
@@ -92,7 +105,7 @@ final class Health_Wiki_ACF {
         ] );
     }
 
-    /* ── Organ ────────────────────────────────────────────── */
+    /* ── Organ Tubuh ──────────────────────────────────────── */
     private static function register_organ(): void {
         acf_add_local_field_group( [
             'key'      => 'group_hw_organ',
@@ -196,8 +209,9 @@ final class Health_Wiki_ACF {
         ] );
     }
 
-    /* ── Helpers ──────────────────────────────────────────── */
+    /* ── Fungsi Pembantu ─────────────────────────────────── */
 
+    /** Buat field dasar dengan tipe dan parameter tambahan. */
     private static function field( string $name, string $type, string $label, array $extra = [] ): array {
         return array_merge( [
             'key'   => 'field_' . $name,
@@ -207,6 +221,7 @@ final class Health_Wiki_ACF {
         ], $extra );
     }
 
+    /** Buat field teks singkat. */
     private static function text( string $name, string $label, string $placeholder = '' ): array {
         return [
             'key'         => 'field_' . $name,
@@ -217,6 +232,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat field textarea (teks panjang). */
     private static function textarea( string $name, string $label ): array {
         return [
             'key'   => 'field_' . $name,
@@ -227,6 +243,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat field editor WYSIWYG. */
     private static function wysiwyg( string $name, string $label ): array {
         return [
             'key'       => 'field_' . $name,
@@ -239,6 +256,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat field dropdown pilihan. */
     private static function select( string $name, string $label, array $choices ): array {
         return [
             'key'     => 'field_' . $name,
@@ -249,6 +267,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat field relasi ke CPT lain. */
     private static function relationship( string $name, string $label, array $post_types ): array {
         return [
             'key'           => 'field_' . $name,
@@ -263,6 +282,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat field repeater (pengulang). */
     private static function repeater( string $name, string $label, array $sub_fields ): array {
         return [
             'key'        => 'field_' . $name,
@@ -275,6 +295,7 @@ final class Health_Wiki_ACF {
         ];
     }
 
+    /** Buat aturan lokasi untuk field group berdasarkan post type. */
     private static function location( string $post_type ): array {
         return [
             [

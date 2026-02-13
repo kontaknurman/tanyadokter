@@ -1,23 +1,26 @@
 <?php
+/**
+ * Auto Internal Linking — otomatis mengubah keyword dalam konten
+ * menjadi link ke post Health Wiki dan post reguler.
+ *
+ * Aturan SEO:
+ * - Hanya link kejadian pertama per keyword
+ * - Maksimal 10 auto-link per halaman
+ * - Tidak link ke diri sendiri (post saat ini dikecualikan)
+ * - Tidak link di dalam tag: <a>, <h1>-<h6>, <script>, <style>, <code>, <pre>
+ * - Link internal: tanpa nofollow, anchor text sesuai
+ * - Panjang keyword minimum: 3 karakter
+ * - Keyword terpanjang dicocokkan duluan (mencegah partial match)
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Auto Internal Linking — automatically links keywords in content
- * to matching Health Wiki posts and regular posts.
- *
- * SEO rules:
- * - Only first occurrence of each keyword is linked
- * - Max 10 auto-links per page
- * - No self-linking (current post excluded)
- * - No linking inside <a>, <h1>-<h6>, <script>, <style> tags
- * - Internal links: no nofollow, proper anchor text
- * - Min keyword length: 3 characters
- * - Longest keyword matched first (prevents partial matches)
- */
 final class Health_Wiki_Autolink {
 
     private const CACHE_KEY  = 'hw_autolink_keywords';
@@ -25,7 +28,7 @@ final class Health_Wiki_Autolink {
     private const MAX_LINKS  = 10;
     private const MIN_LENGTH = 3;
 
-    /** Tags where linking is skipped. */
+    /** Tag-tag yang di-skip (tidak boleh ada link di dalamnya). */
     private const SKIP_TAGS = [ 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'script', 'style', 'code', 'pre', 'button', 'input', 'textarea' ];
 
     public static function init(): void {
@@ -35,7 +38,7 @@ final class Health_Wiki_Autolink {
     }
 
     /**
-     * Replace keyword occurrences in content with internal links.
+     * Ganti keyword di konten dengan link internal.
      */
     public static function process( string $content ): string {
         if ( ! is_singular() || ! in_the_loop() || ! is_main_query() ) {
@@ -56,16 +59,17 @@ final class Health_Wiki_Autolink {
     }
 
     /**
-     * Clear keyword cache when posts change.
+     * Hapus cache keyword saat post berubah.
      */
     public static function clear_cache(): void {
         delete_transient( self::CACHE_KEY );
     }
 
-    /* ── Keyword Replacement Engine ───────────────────────── */
+    /* ── Mesin Pengganti Keyword ─────────────────────────── */
 
+    /** Proses penggantian keyword di teks (melewati tag HTML). */
     private static function replace_keywords( string $content, array $keywords ): string {
-        // Split content into HTML tags and text nodes.
+        /* Pecah konten menjadi tag HTML dan teks. */
         $parts = preg_split( '/(<[^>]+>)/s', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
 
         if ( ! $parts ) {
@@ -74,14 +78,14 @@ final class Health_Wiki_Autolink {
 
         $linked     = [];
         $link_count = 0;
-        $skip_depth = []; // track nesting of skip tags
+        $skip_depth = []; /* Lacak kedalaman tag yang di-skip */
 
         foreach ( self::SKIP_TAGS as $tag ) {
             $skip_depth[ $tag ] = 0;
         }
 
         foreach ( $parts as &$part ) {
-            // Detect opening / closing of skip tags.
+            /* Deteksi pembukaan / penutupan tag yang di-skip. */
             if ( isset( $part[0] ) && $part[0] === '<' ) {
                 foreach ( self::SKIP_TAGS as $tag ) {
                     if ( preg_match( '/^<' . $tag . '[\s>]/i', $part ) ) {
@@ -90,10 +94,10 @@ final class Health_Wiki_Autolink {
                         $skip_depth[ $tag ] = max( 0, $skip_depth[ $tag ] - 1 );
                     }
                 }
-                continue; // Don't process HTML tags themselves.
+                continue; /* Jangan proses tag HTML itu sendiri. */
             }
 
-            // Check if inside any skip tag.
+            /* Cek apakah di dalam tag yang di-skip. */
             $inside_skip = false;
             foreach ( $skip_depth as $depth ) {
                 if ( $depth > 0 ) {
@@ -105,7 +109,7 @@ final class Health_Wiki_Autolink {
                 continue;
             }
 
-            // Replace keywords in this text node.
+            /* Ganti keyword di node teks ini. */
             foreach ( $keywords as $keyword => $url ) {
                 if ( $link_count >= self::MAX_LINKS ) {
                     break 2;
@@ -128,8 +132,9 @@ final class Health_Wiki_Autolink {
         return implode( '', $parts );
     }
 
-    /* ── Keyword Cache ────────────────────────────────────── */
+    /* ── Cache Keyword ───────────────────────────────────── */
 
+    /** Ambil daftar keyword (kecuali post saat ini). */
     private static function get_keywords( int $exclude_id ): array {
         $all = get_transient( self::CACHE_KEY );
 
@@ -138,7 +143,7 @@ final class Health_Wiki_Autolink {
             set_transient( self::CACHE_KEY, $all, self::CACHE_TTL );
         }
 
-        // Exclude current post.
+        /* Kecualikan post saat ini. */
         $result = [];
         foreach ( $all as $title => $data ) {
             if ( (int) $data['id'] !== $exclude_id ) {
@@ -149,6 +154,7 @@ final class Health_Wiki_Autolink {
         return $result;
     }
 
+    /** Bangun daftar keyword dari semua post type. */
     private static function build_keyword_list(): array {
         $post_types = array_merge( HW_POST_TYPES, [ 'post' ] );
 
@@ -170,7 +176,7 @@ final class Health_Wiki_Autolink {
             ];
         }
 
-        // Sort by length DESC — longest keywords first to prevent partial matches.
+        /* Urutkan dari terpanjang — keyword panjang dicocokkan duluan. */
         uksort( $keywords, static fn( string $a, string $b ): int => mb_strlen( $b ) - mb_strlen( $a ) );
 
         return $keywords;

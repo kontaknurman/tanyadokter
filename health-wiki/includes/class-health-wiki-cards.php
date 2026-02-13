@@ -1,29 +1,34 @@
 <?php
+/**
+ * Kartu Post Type — grid visual menampilkan setiap CPT
+ * dengan thumbnail, label, dan jumlah post.
+ *
+ * Penggunaan di PHP:
+ *   echo hw_post_type_cards();
+ *   echo hw_post_type_cards( [ 'columns' => 3, 'show_post' => true ] );
+ *
+ * Penggunaan shortcode:
+ *   [hw_post_type_cards]
+ *   [hw_post_type_cards columns="3" show_post="1"]
+ *
+ * @package HealthWiki
+ */
+
 declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Post Type Cards — visual grid showing each CPT with thumbnail, label, and count.
- *
- * Usage in PHP template:
- *   echo hw_post_type_cards();
- *   echo hw_post_type_cards( [ 'columns' => 3, 'show_post' => true ] );
- *
- * Usage as shortcode:
- *   [hw_post_type_cards]
- *   [hw_post_type_cards columns="3" show_post="1"]
- */
 final class Health_Wiki_Cards {
 
     private const DEFAULTS = [
-        'post_types' => [],      // Empty = all HW types.
-        'columns'    => 5,       // Grid columns (2-6).
-        'show_post'  => false,   // Include regular 'post' type.
+        'post_types' => [],      /* Kosong = semua HW post types. */
+        'columns'    => 5,       /* Kolom grid (2-6). */
+        'show_post'  => false,   /* Tampilkan juga post type 'post'. */
     ];
 
+    /** Ikon SVG per CPT. */
     private const CPT_ICONS = [
         HW_CPT_PENYAKIT   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
         HW_CPT_OBAT       => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3"/></svg>',
@@ -32,14 +37,15 @@ final class Health_Wiki_Cards {
         HW_CPT_PENGOBATAN => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>',
     ];
 
-    private const POST_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg>';
+    /** Ikon SVG untuk post reguler. */
+    private const POST_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z"/></svg>';
 
     public static function init(): void {
         add_shortcode( 'hw_post_type_cards', [ __CLASS__, 'shortcode' ] );
     }
 
     /**
-     * Shortcode handler.
+     * Handler shortcode.
      */
     public static function shortcode( $atts = [] ): string {
         $atts = shortcode_atts( [
@@ -54,7 +60,7 @@ final class Health_Wiki_Cards {
     }
 
     /**
-     * Render post type cards.
+     * Render kartu post type.
      *
      * @param array{post_types?: string[], columns?: int, show_post?: bool} $args
      */
@@ -100,11 +106,9 @@ final class Health_Wiki_Cards {
         return $html;
     }
 
-    /* ── Helpers ──────────────────────────────────────────── */
+    /* ── Fungsi Pembantu ─────────────────────────────────── */
 
-    /**
-     * Get the featured image of the latest post in this CPT.
-     */
+    /** Ambil gambar unggulan dari post terbaru di CPT ini. */
     private static function get_thumbnail( string $post_type ): string {
         $latest = get_posts( [
             'post_type'      => $post_type,
@@ -125,25 +129,23 @@ final class Health_Wiki_Cards {
         return '';
     }
 
-    /**
-     * Get SVG icon for a post type.
-     */
+    /** Ambil ikon SVG untuk post type. */
     private static function get_icon( string $post_type ): string {
         return self::CPT_ICONS[ $post_type ] ?? self::POST_ICON;
     }
 }
 
-/* ── Global helper function ──────────────────────────────── */
+/* ── Fungsi global pembantu ─────────────────────────────── */
 
 if ( ! function_exists( 'hw_post_type_cards' ) ) {
     /**
-     * Render Health Wiki post type cards.
+     * Render kartu post type Health Wiki.
      *
-     * Usage:
+     * Penggunaan:
      *   echo hw_post_type_cards();
      *   echo hw_post_type_cards( [ 'columns' => 3, 'show_post' => true ] );
      *
-     * @param array $args Optional. columns (2-6), show_post (bool), post_types (array).
+     * @param array $args Opsional. columns (2-6), show_post (bool), post_types (array).
      */
     function hw_post_type_cards( array $args = [] ): string {
         return Health_Wiki_Cards::render( $args );

@@ -1,6 +1,7 @@
 # Health Wiki — Plugin WordPress
 
 Wiki Kesehatan Indonesia. Referensi: Alodokter, Halodoc.
+Versi: 1.0.0 | PHP 8.0+ | WordPress 6.0+ | ACF Pro
 
 ## Custom Post Types
 
@@ -38,30 +39,30 @@ Relasi bersifat bi-directional secara manual (pilih di kedua sisi). Field prefix
 
 ```
 health-wiki/
-├── health-wiki.php              # Entry point, constants, loader
+├── health-wiki.php                    # Titik masuk, konstanta, loader
 ├── includes/
-│   ├── class-health-wiki-cpt.php       # Register 5 CPT + 5 taxonomy
-│   ├── class-health-wiki-acf.php       # ACF field groups (programmatic)
-│   ├── class-health-wiki-template.php  # Render konten via the_content filter
-│   ├── class-health-wiki-schema.php    # JSON-LD structured data
-│   ├── class-health-wiki-seo.php       # Meta tags, OG, Twitter, canonical
-│   ├── class-health-wiki-performance.php # Inline CSS, lazy load, cleanup
-│   ├── class-health-wiki-archive.php    # Archive A-Z listing, SEO, schema
-│   ├── class-health-wiki-autolink.php   # Auto internal linking
-│   └── class-health-wiki-cards.php      # Post type cards widget + shortcode
+│   ├── class-health-wiki-cpt.php      # Registrasi 5 CPT + 5 taxonomy
+│   ├── class-health-wiki-acf.php      # Field group ACF (programatik)
+│   ├── class-health-wiki-template.php # Render konten via filter the_content
+│   ├── class-health-wiki-schema.php   # JSON-LD structured data
+│   ├── class-health-wiki-seo.php      # Meta tags, OG, Twitter, canonical
+│   ├── class-health-wiki-performance.php # CSS inline, lazy load, pembersihan
+│   ├── class-health-wiki-archive.php  # Archive A-Z, SEO, schema
+│   ├── class-health-wiki-autolink.php # Auto internal linking
+│   └── class-health-wiki-cards.php    # Kartu post type + shortcode
 ├── templates/
-│   └── archive-health-wiki.php          # Archive template (A-Z)
-└── assets/css/health-wiki.css           # Styling (di-inline saat render)
+│   └── archive-health-wiki.php        # Template archive (A-Z)
+└── assets/css/health-wiki.css         # Styling (di-inline saat render)
 ```
 
 ## Halaman Archive A-Z
 
 Setiap CPT memiliki halaman archive dengan:
 - Judul: "Daftar Penyakit", "Daftar Obat", dll
-- Search box (redirect ke WordPress search dengan `post_type` filter)
-- Navigasi A-Z (letter links, huruf tanpa konten di-disable, tombol "Semua" untuk reset)
+- Kotak pencarian (redirect ke WordPress search dengan filter `post_type`)
+- Navigasi A-Z (link huruf, huruf tanpa konten di-disable, tombol "Semua" untuk reset)
 - Daftar post dikelompokkan per huruf, diurutkan A-Z
-- Total counter
+- Penghitung total
 
 URL: `/penyakit/`, `/obat/`, `/organ/`, `/gizi-makanan/`, `/pengobatan/`
 Filter huruf: `/penyakit/?huruf=A`
@@ -70,27 +71,27 @@ Template menggunakan `get_header()` / `get_footer()` dari tema aktif.
 Schema: `CollectionPage` + `BreadcrumbList`.
 
 File:
-- `includes/class-health-wiki-archive.php` — logic, SEO, schema
-- `templates/archive-health-wiki.php` — HTML template
+- `includes/class-health-wiki-archive.php` — logika, SEO, schema
+- `templates/archive-health-wiki.php` — template HTML
 
 ## Auto Internal Linking
 
-Otomatis mengubah keyword di konten menjadi internal link jika cocok dengan judul post dari semua HW post types + regular post.
+Otomatis mengubah keyword di konten menjadi internal link jika cocok dengan judul post dari semua HW post types + post reguler.
 
 Aturan SEO:
-- Hanya link occurrence pertama per keyword
-- Max 10 auto-link per halaman
-- Tidak link ke diri sendiri (current post)
+- Hanya link kejadian pertama per keyword
+- Maks 10 auto-link per halaman
+- Tidak link ke diri sendiri (post saat ini)
 - Skip di dalam tag: `<a>`, `<h1>`-`<h6>`, `<script>`, `<style>`, `<code>`, `<pre>`
-- Keyword min 3 karakter, longest match first
+- Keyword min 3 karakter, cocokkan terpanjang duluan
 - Internal link tanpa `nofollow`
-- Cache 1 jam via transient, auto-clear saat post disimpan
+- Cache 1 jam via transient, auto-clear saat post disimpan/dihapus
 
 File: `includes/class-health-wiki-autolink.php`
 
-## Post Type Cards
+## Kartu Post Type
 
-Widget visual menampilkan semua CPT dalam grid card (thumbnail/icon, label, jumlah post).
+Widget visual menampilkan semua CPT dalam grid kartu (thumbnail/ikon, label, jumlah post).
 
 Panggil di PHP:
 ```php
@@ -107,7 +108,7 @@ Shortcode:
 Parameter:
 - `columns` (2-6): jumlah kolom grid, default 5
 - `show_post` (bool): tampilkan juga post type 'post'
-- `post_types` (array, PHP only): override CPT list
+- `post_types` (array, PHP saja): override daftar CPT
 
 File: `includes/class-health-wiki-cards.php`
 
@@ -117,9 +118,9 @@ Plugin menggunakan filter `the_content` (prioritas 20) sehingga kompatibel denga
 
 Konten yang di-render:
 1. Breadcrumb navigasi
-2. Overview card (ringkasan + meta data)
+2. Kartu ringkasan (ringkasan + meta data)
 3. Konten editor WordPress (deskripsi utama)
-4. Table of Contents (otomatis dari section yang terisi)
+4. Daftar Isi (otomatis dari section yang terisi)
 5. Section-section terstruktur dari ACF fields
 6. Artikel Terkait (link antar CPT dari relationship fields)
 7. Daftar referensi
@@ -137,13 +138,14 @@ Konten yang di-render:
 
 - Meta description dari field ringkasan (maks 160 karakter)
 - Open Graph + Twitter Card tags
-- Document title otomatis: "{Nama} — {Konteks} | {Site Name}"
+- Judul dokumen otomatis: "{Nama} — {Konteks} | {Nama Situs}"
 - Canonical URL
 - Robots: index, follow, max-snippet:-1
 
 ## Keamanan
 
 - Semua output di-escape: `esc_html()`, `esc_url()`, `esc_attr()`, `wp_kses_post()`
+- CSS inline disanitasi dengan `wp_strip_all_tags()`
 - Tidak ada direct SQL query
 - Tidak ada user input tanpa sanitasi
 - Referensi link: `rel="noopener noreferrer nofollow"`
